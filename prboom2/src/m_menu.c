@@ -182,6 +182,9 @@ int     messageLastMenuActive;
 
 dboolean messageNeedsInput; // timed message = no input from user
 
+// If needs input, allow selecting Y or N using standard menu inputs
+static int messageInputIndex;
+
 void (*messageRoutine)(int response);
 
 static void M_DrawBackground(const char *flat, int scrn)
@@ -5044,10 +5047,18 @@ dboolean M_Responder (event_t* ev) {
 
     if (messageNeedsInput == true)
     { // phares
-      if (ch == 'y' || (!ch && action == MENU_ENTER))
+      if (ch == 'y')
         affirmative = true;
       else if (ch == ' ' || ch == KEYD_ESCAPE || ch == 'n' || (!ch && action == MENU_BACKSPACE))
         affirmative = false;
+      else if (action == MENU_UP || action == MENU_DOWN)
+      {
+        messageInputIndex = 1 - messageInputIndex;
+        S_StartVoidSound(g_sfx_menu);
+        return false;
+      }
+      else if (action == MENU_ENTER)
+        affirmative = messageInputIndex == 0;
       else
         return false;
     }
@@ -5662,6 +5673,13 @@ void M_Drawer (void)
         p++;
     }
     Z_Free(ms);
+
+    if (messageNeedsInput)
+    {
+      M_WriteText(150, y + 20, "yes", messageInputIndex == 0 ? CR_BRICK : CR_DEFAULT);
+      M_WriteText(150, y + 30, "no", messageInputIndex == 1 ? CR_BRICK : CR_DEFAULT);
+      M_WriteText(140, y + 20 + 10 * messageInputIndex, ">", CR_BRICK);
+    }
   }
   else if (menuactive)
   {
@@ -5796,6 +5814,7 @@ void M_StartMessage (const char* string,void* routine,dboolean input)
   messageString = string;
   messageRoutine = routine;
   messageNeedsInput = input;
+  messageInputIndex = 0;
   M_ChangeMenu(NULL, mnact_float);
   return;
 }
