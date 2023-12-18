@@ -2290,6 +2290,8 @@ setup_menu_t keys_settings6[] =
   { "SELECT ITEM", S_INPUT | S_NOCLEAR, m_menu, KB_X, 0, dsda_input_menu_enter },
   {"EXIT"        ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_escape},
   {"CLEAR"       ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_clear},
+  {"CONFIRM"     ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_confirm},
+  {"CANCEL"      ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_cancel},
   EMPTY_LINE,
   {"MESSAGES"       ,S_SKIP|S_TITLE,m_null,KB_X},
   {"REPEAT MESSAGE" ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_repeat_message},
@@ -4953,6 +4955,14 @@ dboolean M_Responder (event_t* ev) {
   {
     action = MENU_CLEAR;
   }
+  else if (dsda_InputActivated(dsda_input_menu_confirm))
+  {
+    action = MENU_CONFIRM;
+  }
+  else if (dsda_InputActivated(dsda_input_menu_cancel))
+  {
+    action = MENU_CANCEL;
+  }
 
   if (M_ConsoleOpen() && action != MENU_ESCAPE)
   {
@@ -5044,9 +5054,9 @@ dboolean M_Responder (event_t* ev) {
 
     if (messageNeedsInput == true)
     { // phares
-      if (ch == 'y' || (!ch && action == MENU_ENTER))
+      if (action == MENU_CONFIRM || (!ch && action == MENU_ENTER))
         affirmative = true;
-      else if (ch == ' ' || ch == KEYD_ESCAPE || ch == 'n' || (!ch && action == MENU_BACKSPACE))
+      else if (action == MENU_CANCEL || action == MENU_ESCAPE || action == MENU_BACKSPACE || ch == ' ')
         affirmative = false;
       else
         return false;

@@ -164,6 +164,8 @@ typedef struct menu_s
 #define MENU_ENTER     -7
 #define MENU_ESCAPE    -8
 #define MENU_CLEAR     -9
+#define MENU_CONFIRM   -10
+#define MENU_CANCEL    -11
 
 void M_SetupNextMenu(menu_t *menudef);
 void M_DrawDelVerify(void);

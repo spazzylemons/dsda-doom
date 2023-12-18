@@ -125,6 +125,8 @@ typedef enum {
   dsda_input_menu_enter,
   dsda_input_menu_escape,
   dsda_input_menu_clear,
+  dsda_input_menu_confirm,
+  dsda_input_menu_cancel,
   dsda_input_help,
   dsda_input_escape,
   dsda_input_cycle_profile,
